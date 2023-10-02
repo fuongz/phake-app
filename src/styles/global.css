@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Sono', sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  @apply underline text-blue-400;
+}
