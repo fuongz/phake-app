@@ -5,7 +5,7 @@ interface HomeProps {}
 export default function Home(props: HomeProps) {
   return (
     <>
-      <JSONEditor defaultValue={'{"a":1}'} />
+      <JSONEditor />
     </>
   )
 }

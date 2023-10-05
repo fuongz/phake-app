@@ -74,8 +74,8 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
   }, [defaultValue])
 
   return (
-    <div>
-      <div className="mb-4 border-b">
+    <div className="h-screen">
+      <div className="border-b">
         <Toolbar aria-label="Default">
           <ToolbarButton disabled={!isValidJson} aria-label="Minify" icon={<ArrowDownload24Regular />} onClick={() => handleToolbarAction('download')}>
             Download
@@ -104,14 +104,14 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
           domReadOnly: readonly === true,
         }}
         onMount={handleEditorDidMount}
-        height={height ? height : '80vh'}
+        height={height ? height : '93.8%'}
         defaultValue={typeof defaultValue !== 'undefined' ? defaultValue : ''}
         onValidate={handleEditorValidation}
         onChange={handleEditorChange}
       />
 
       {errors && errors.length > 0 && (
-        <div className="error">
+        <div className="error fixed bottom-0 w-full bg-red-500 text-white px-4 py-2 border-t z-10">
           {errors.map((message) => (
             <p key={`error-${message}`}>{message}</p>
           ))}
