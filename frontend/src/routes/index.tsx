@@ -3,8 +3,8 @@ import Home from '../pages/Home'
 const rootRouter = [
   {
     path: '/',
-    element: <Home />
-  }
+    element: <Home />,
+  },
 ]
 
 export default rootRouter

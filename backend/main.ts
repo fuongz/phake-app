@@ -41,6 +41,36 @@ fastify.get('/config/:name', async (req: any, rep) => {
   })
 })
 
+fastify.patch('/config/:id', async (req: any, rep) => {
+  const { description } = req.body
+  const { id } = req.params
+  if (!id)
+    return rep.status(404).send({
+      status: 0,
+      message: 'Config not found',
+    })
+  if (!description)
+    return rep.status(404).send({
+      status: 0,
+      message: 'Invalid "description" data',
+    })
+
+  const config = await fastify.prisma.config.update({
+    where: {
+      id: parseInt(id),
+    },
+    data: {
+      description,
+    },
+  })
+
+  return rep.status(200).send({
+    status: 1,
+    message: 'Updated',
+    data: config,
+  })
+})
+
 const main = async () => {
   try {
     await fastify.register(cors, {
