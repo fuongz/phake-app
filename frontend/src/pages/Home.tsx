@@ -21,7 +21,7 @@ export default function Home(props: HomeProps) {
 
   const { isLoading, data } = useQuery({
     queryKey: ['systemInfo'],
-    queryFn: () => fetch('http://localhost:3001/info').then((res) => res.json()),
+    queryFn: () => fetch('http://localhost:3002/v1/system-info').then((res) => res.json()),
   })
 
   const isChanged = useMemo(() => {
@@ -46,7 +46,7 @@ export default function Home(props: HomeProps) {
   const handleSearch = async () => {
     try {
       if (!searchValue) return
-      const res = await fetch(`http://localhost:3001/config/${searchValue}`)
+      const res = await fetch(`http://localhost:3002/v1/configs/${searchValue}`)
       const data = await res.json()
       if (!res.ok) {
         throw new Error(data.message)
@@ -70,7 +70,7 @@ export default function Home(props: HomeProps) {
   const handleSave = async () => {
     try {
       const minifyJson = minifyJsonString(jsonNewValue)
-      const res = await fetch(`http://localhost:3001/config/${currentConfigData.id}`, {
+      const res = await fetch(`http://localhost:3002/v1/configs/${currentConfigData.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export default function Home(props: HomeProps) {
               {tab === 'editor' ? 'Changes' : 'Back to Editor'}
             </Button>
 
-            <Button disabled={!searchValue || !jsonValue} appearance="primary" icon={<SaveSync20Regular />} onClick={handleSave}>
+            <Button disabled={!searchValue || !jsonValue || !isChanged} appearance="primary" icon={<SaveSync20Regular />} onClick={handleSave}>
               Save
             </Button>
           </div>

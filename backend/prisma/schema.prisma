@@ -21,3 +21,4 @@ model Config {
   sort Int?
   os String? @db.VarChar(255)
 }
+
