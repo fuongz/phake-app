@@ -1,35 +1,19 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { Config } from '@prisma/client';
-import { PrismaService } from 'src/core/services/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Config } from 'src/config/models/config.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ConfigService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Config)
+    private readonly configRepository: Repository<Config>,
+  ) {}
 
   async findByName(name: string): Promise<Config | null> {
-    return this.prisma.config.findFirstOrThrow({
-      where: {
-        name: name,
-        status: '1',
-      },
-    });
-  }
-
-  async updateById(id: string, data: any): Promise<Config | any> {
-    const { description } = data;
-    if (!id) throw new NotFoundException({ id });
-    if (!description) throw new UnprocessableEntityException();
-    return this.prisma.config.update({
-      where: {
-        id: parseInt(id),
-      },
-      data: {
-        description,
-      },
+    return this.configRepository.findOneByOrFail({
+      name: name,
+      status: '1',
     });
   }
 }

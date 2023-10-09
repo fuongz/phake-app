@@ -1,10 +1,10 @@
 import { Controller, UseInterceptors, Get, Patch, Req } from '@nestjs/common';
 import { ConfigService } from './config.service';
 import { Request } from 'express';
-import { Config } from '@prisma/client';
 import { FormatResponseInterceptor } from 'src/core/interceptors/format-response.interceptor';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
+import { Config } from 'src/config/models/config.entity';
 
 @Controller('configs')
 @UseInterceptors(FormatResponseInterceptor)

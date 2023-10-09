@@ -1,21 +1,14 @@
-FROM node:16-slim
+FROM node:lts
 
 RUN apt-get update
 RUN apt-get install -y openssl
 
 WORKDIR /user/src/app
 
-COPY package*.json ./
-COPY prisma ./prisma/
-
-RUN apt-get -qy update && apt-get -qy install openssl
+COPY . .
+RUN rm -rf pnpm-lock.yaml
 
 RUN npm install
-RUN npm install @prisma/client
-
-COPY . .
-RUN npx prisma generate --schema ./prisma/schema.prisma
-
 RUN npm run build
 
 USER node
