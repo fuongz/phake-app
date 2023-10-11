@@ -77,15 +77,15 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
     <div className="h-screen">
       <div className="border-b">
         <Toolbar aria-label="Default">
-          <ToolbarButton disabled={!isValidJson} aria-label="Minify" icon={<ArrowDownload24Regular />} onClick={() => handleToolbarAction('download')}>
+          <ToolbarButton disabled={!isValidJson || !editorRef.current?.getValue()} aria-label="Minify" icon={<ArrowDownload24Regular />} onClick={() => handleToolbarAction('download')}>
             Download
           </ToolbarButton>
 
-          <ToolbarButton disabled={!isValidJson} aria-label="Minify" icon={<ArrowMinimize24Regular />} onClick={() => handleToolbarAction('minify')}>
+          <ToolbarButton disabled={!isValidJson || !editorRef.current?.getValue()} aria-label="Minify" icon={<ArrowMinimize24Regular />} onClick={() => handleToolbarAction('minify')}>
             Minify
           </ToolbarButton>
 
-          <ToolbarButton disabled={!isValidJson} aria-label="Pretty" icon={<Code24Regular />} onClick={() => handleToolbarAction('pretty')}>
+          <ToolbarButton disabled={!isValidJson || !editorRef.current?.getValue()} aria-label="Pretty" icon={<Code24Regular />} onClick={() => handleToolbarAction('pretty')}>
             Pretty
           </ToolbarButton>
         </Toolbar>
