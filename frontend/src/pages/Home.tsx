@@ -14,6 +14,20 @@ const OfflineMessage = () => {
   return <span className="text-red-700 italic">You're offline. Check your Database Connection.</span>
 }
 
+const Actions = ({ isChanged, tab, jsonValue, handleSave, setTab }: { isChanged: boolean; tab: string; jsonValue: string; setTab: any; handleSave: any }) => {
+  return (
+    <div className="flex ml-auto gap-4">
+      <Button disabled={!isChanged} appearance="primary" icon={tab !== 'editor' ? <ArrowLeft24Regular /> : <BranchCompare24Regular />} onClick={() => setTab(tab === 'diff' ? 'editor' : 'diff')}>
+        {tab === 'editor' ? 'Changes' : 'Back to Editor'}
+      </Button>
+
+      <Button disabled={!jsonValue || !isChanged} appearance="primary" icon={<SaveSync20Regular />} onClick={handleSave}>
+        Save
+      </Button>
+    </div>
+  )
+}
+
 interface HomeProps {}
 export default function Home({}: HomeProps) {
   const toasterId = useId('toaster')
@@ -81,23 +95,7 @@ export default function Home({}: HomeProps) {
           <>
             <SearchInput onSubmit={(value) => handleSearch(value)} />
             <DatabaseStatus system={system} />
-
-            {currentConfigData && (
-              <div className="flex ml-auto gap-4">
-                <Button
-                  disabled={!isChanged}
-                  appearance="primary"
-                  icon={tab !== 'editor' ? <ArrowLeft24Regular /> : <BranchCompare24Regular />}
-                  onClick={() => setTab(tab === 'diff' ? 'editor' : 'diff')}
-                >
-                  {tab === 'editor' ? 'Changes' : 'Back to Editor'}
-                </Button>
-
-                <Button disabled={!jsonValue || !isChanged} appearance="primary" icon={<SaveSync20Regular />} onClick={handleSave}>
-                  Save
-                </Button>
-              </div>
-            )}
+            {currentConfigData && <Actions isChanged={isChanged} tab={tab} setTab={setTab} jsonValue={jsonValue} handleSave={handleSave} />}
           </>
         ) : error || (!system?.data && !isLoading) ? (
           <OfflineMessage />
