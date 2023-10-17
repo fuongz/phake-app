@@ -10,28 +10,28 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fluentui/react-components": "^9.32.3",
-    "@fluentui/react-icons": "^2.0.218",
-    "@monaco-editor/react": "^4.5.2",
-    "@tanstack/react-query": "^4.29.12",
-    "monaco-editor": "^0.43.0",
+    "@fluentui/react-components": "^9.35.0",
+    "@fluentui/react-icons": "^2.0.220",
+    "@monaco-editor/react": "^4.6.0",
+    "@tanstack/react-query": "^4.36.1",
+    "monaco-editor": "^0.44.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.9.0",
-    "react-router-dom": "^6.11.2",
+    "react-icons": "^4.11.0",
+    "react-router-dom": "^6.17.0",
     "react-use": "^17.4.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@tanstack/eslint-plugin-query": "^4.29.9",
-    "@types/react": "^18.2.7",
-    "@types/react-dom": "^18.2.4",
-    "@types/uuid": "^9.0.4",
-    "@vitejs/plugin-react": "^4.0.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24",
-    "tailwindcss": "^3.3.2",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.9"
+    "@tanstack/eslint-plugin-query": "^4.36.1",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "@types/uuid": "^9.0.5",
+    "@vitejs/plugin-react": "^4.1.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11"
   }
 }
