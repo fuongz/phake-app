@@ -1,31 +1,47 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmMongoLogger } from 'src/core/loggers/typeorm-mongo.logger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
-      },
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: parseInt(configService.get('REDIS_PORT', '6379')),
+        },
+      }),
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT),
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASS,
-      database: process.env.DATABASE_NAME,
-      entities: [__dirname + '/models/*.entity{.ts,.js}'],
-      synchronize: false,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get('MONGO_URL', 'mongodb://localhost:27017/db'),
+      }),
     }),
-    MongooseModule.forRoot(process.env.MONGO_URL),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DATABASE_HOST', 'localhost'),
+        port: parseInt(configService.get('DATABASE_PORT', '3306')),
+        username: configService.get('DATABASE_USER', 'root'),
+        password: configService.get('DATABASE_PASS', ''),
+        database: configService.get('DATABASE_NAME', 'database_name'),
+        entities: [__dirname + '/models/*.entity{.ts,.js}'],
+        synchronize: false,
+        logger: new TypeOrmMongoLogger(),
+      }),
+    }),
   ],
 })
 export class AppConfigModule {}
