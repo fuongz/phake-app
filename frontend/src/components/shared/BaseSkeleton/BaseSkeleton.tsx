@@ -1,4 +1,4 @@
-import { Skeleton, SkeletonItem } from '@fluentui/react-components'
+import { Skeleton, SkeletonItem, useId } from '@fluentui/react-components'
 
 interface BaseSkeletonProps {
   lines: number
@@ -6,7 +6,8 @@ interface BaseSkeletonProps {
 
 const BaseSkeleton: React.FC<BaseSkeletonProps> = ({ lines }) => {
   const _lines = lines || 1
-  return <Skeleton className="w-full">{_lines && _lines > 0 && [...Array(_lines).keys()].map(() => <SkeletonItem />)}</Skeleton>
+  const skeletonId = useId('skeleton')
+  return <Skeleton className="w-full">{_lines && _lines > 0 && [...Array(_lines).keys()].map((_, index) => <SkeletonItem key={`${skeletonId}-${index}`} />)}</Skeleton>
 }
 
 export { BaseSkeleton }

@@ -8,6 +8,7 @@ import { useSystemInfo } from '../hooks/useSystem'
 import { useConfig } from '../hooks/useConfig'
 import { useMutation } from '@tanstack/react-query'
 import { BaseSkeleton, BaseToast, DatabaseStatus, SearchInput } from '../components'
+import { useDebounce, useLocalStorage } from 'react-use'
 
 // Offline message component
 const OfflineMessage = () => {
@@ -32,12 +33,16 @@ interface HomeProps {}
 export default function Home({}: HomeProps) {
   const toasterId = useId('toaster')
   const [currentConfigData, setCurrentConfigData] = useState<any>(undefined)
-  const [jsonValue, setJsonValue] = useState<string>('')
   const [jsonNewValue, setJsonNewValue] = useState<string>('')
   const { dispatchToast } = useToastController(toasterId)
   const { isLoading, error, data: system } = useSystemInfo()
   const { get: getConfig, put: updateConfig } = useConfig()
   const [tab, setTab] = useState('editor')
+  const [value, setValue] = useLocalStorage('hiip.devtools.home_page_data', '')
+  const cachedValue = useMemo(() => {
+    return value || ''
+  }, [value])
+  const [jsonValue, setJsonValue] = useState<string>(cachedValue || '')
 
   const editorComponent = {
     editor: <JSONEditor height={'90.207%'} defaultValue={jsonValue} onChange={(value) => setJsonNewValue(value)} />,
@@ -47,6 +52,17 @@ export default function Home({}: HomeProps) {
       </div>
     ),
   }[tab]
+
+  const [,] = useDebounce(
+    () => {
+      if (jsonNewValue && jsonNewValue !== '') {
+        console.log('Cache updated!')
+        setValue(jsonNewValue)
+      }
+    },
+    1000,
+    [jsonNewValue]
+  )
 
   const configMutation = useMutation({
     mutationKey: ['config'],

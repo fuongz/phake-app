@@ -20,10 +20,13 @@ interface JSONEditorProp {
 export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChange, defaultValue }): JSX.Element => {
   const editorRef = useRef<RefObject | null>(null)
 
+  const [hasChanged, setHasChanged] = useState<boolean>(false)
+  const [hasDefaultValue, setHasDefaultValue] = useState<boolean>(false)
   const [isValidJson, setIsValidJson] = useState(true)
   const [errors, setErrors] = useState<Array<string>>([])
 
   const handleEditorDidMount = (editor: any) => {
+    setHasDefaultValue(true)
     editorRef.current = editor
   }
 
@@ -38,6 +41,7 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
 
   const handleEditorChange = useCallback(
     (value: any) => {
+      setHasDefaultValue(false)
       onChange && onChange(value)
     },
     [onChange]
@@ -77,7 +81,12 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
     <div className="h-screen">
       <div className="border-b">
         <Toolbar aria-label="Default">
-          <ToolbarButton disabled={!isValidJson || !editorRef.current?.getValue()} aria-label="Minify" icon={<ArrowDownload24Regular />} onClick={() => handleToolbarAction('download')}>
+          <ToolbarButton
+            disabled={!isValidJson || (!editorRef.current?.getValue() && !hasDefaultValue)}
+            aria-label="Download"
+            icon={<ArrowDownload24Regular />}
+            onClick={() => handleToolbarAction('download')}
+          >
             Download
           </ToolbarButton>
 
@@ -99,6 +108,9 @@ export const JSONEditor: React.FC<JSONEditorProp> = ({ readonly, height, onChang
           autoClosingQuotes: 'always',
           formatOnPaste: true,
           formatOnType: true,
+          fontFamily: 'Cascadia Code',
+          fontLigatures: "'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'zero', 'onum'",
+          fontSize: 14,
           scrollBeyondLastLine: false,
           readOnly: readonly === true,
           domReadOnly: readonly === true,
