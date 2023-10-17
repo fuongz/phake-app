@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import { ConfigCached } from 'src/mongo/schemas/config_cached.schema';
 import { Config } from 'src/config/models/config.entity';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 
 @Processor('config-queue')
 export class ConfigProcessor {
@@ -16,6 +17,7 @@ export class ConfigProcessor {
     @InjectRepository(Config) private configRepository: Repository<Config>,
     @InjectModel(ConfigCached.name)
     private configCachedModel: Model<ConfigCached>,
+    private configService: ConfigService,
   ) {}
 
   @Process('update')
@@ -36,12 +38,13 @@ export class ConfigProcessor {
       description: configDescription,
     });
 
-    console.log(updated);
-
     if (updated) {
       const cached = new this.configCachedModel({
         original: originalDescription,
         modified: modifiedDescription,
+        host: this.configService.get('DATABASE_HOST'),
+        database_name: this.configService.get('DATABASE_NAME'),
+        user: this.configService.get('DATABASE_USER'),
       });
       await cached.save();
       this.logger.debug(

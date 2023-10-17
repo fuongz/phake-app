@@ -8,6 +8,15 @@ export type ConfigCachedDocument = HydratedDocument<ConfigCached>;
 })
 export class ConfigCached {
   @Prop()
+  host: string;
+
+  @Prop()
+  user: string;
+
+  @Prop()
+  database: string;
+
+  @Prop()
   original: string;
 
   @Prop()

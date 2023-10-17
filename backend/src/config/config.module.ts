@@ -4,6 +4,8 @@ import { BullModule } from '@nestjs/bull';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmMongoLogger } from 'src/core/loggers/typeorm-mongo.logger';
+import { TypeOrmConfigService } from './typeorm-config.service';
+import { TypeOrmConfigModule } from './typeorm-config.module';
 
 @Module({
   imports: [
@@ -28,9 +30,12 @@ import { TypeOrmMongoLogger } from 'src/core/loggers/typeorm-mongo.logger';
       }),
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      imports: [ConfigModule, TypeOrmConfigModule],
+      inject: [ConfigService, TypeOrmConfigService],
+      useFactory: (
+        configService: ConfigService,
+        typeormConfigService: TypeOrmConfigService,
+      ) => ({
         type: 'mysql',
         host: configService.get('DATABASE_HOST', 'localhost'),
         port: parseInt(configService.get('DATABASE_PORT', '3306')),
@@ -39,7 +44,7 @@ import { TypeOrmMongoLogger } from 'src/core/loggers/typeorm-mongo.logger';
         database: configService.get('DATABASE_NAME', 'database_name'),
         entities: [__dirname + '/models/*.entity{.ts,.js}'],
         synchronize: false,
-        logger: new TypeOrmMongoLogger(),
+        logger: new TypeOrmMongoLogger(typeormConfigService),
       }),
     }),
   ],
