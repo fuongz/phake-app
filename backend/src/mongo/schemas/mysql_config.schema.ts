@@ -19,7 +19,7 @@ export class MySQLConfig {
   database_name: string;
 
   @Prop({ default: null })
-  user_id: number;
+  user_id: string;
 
   @Prop({
     default: false,

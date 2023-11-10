@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { FluentProvider, webLightTheme } from '@fluentui/react-components'
 
+import AppProvider from './hooks/userAppProvider'
+
 import App from './App'
 import './styles/global.css'
 
@@ -15,7 +17,9 @@ function RootApp() {
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-            <App />
+            <AppProvider>
+              <App />
+            </AppProvider>
           </BrowserRouter>
         </QueryClientProvider>
       </React.StrictMode>

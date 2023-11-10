@@ -4,11 +4,14 @@ import { ArrowLeft24Regular, BranchCompare24Regular, SaveSync20Regular } from '@
 import { useMemo, useState } from 'react'
 import { minifyJsonString, prettifyJsonString } from '../components/editors/json/utils/helper'
 import { DiffEditor } from '@monaco-editor/react'
-import { useSystemInfo } from '../hooks/useSystem'
 import { useConfig } from '../hooks/useConfig'
 import { useMutation } from '@tanstack/react-query'
 import { BaseSkeleton, BaseToast, DatabaseStatus, SearchInput } from '../components'
 import { useDebounce, useLocalStorage } from 'react-use'
+import { AuthButtons } from '../components/shared/Auth/AuthButtons'
+import AuthUser from '@/components/shared/Auth/AuthUser'
+import { useAuth } from '@/hooks/auth'
+import { useDatabaseConfig } from '@/hooks/useDatabaseConfig'
 
 // Offline message component
 const OfflineMessage = () => {
@@ -17,7 +20,7 @@ const OfflineMessage = () => {
 
 const Actions = ({ isChanged, tab, jsonValue, handleSave, setTab }: { isChanged: boolean; tab: string; jsonValue: string; setTab: any; handleSave: any }) => {
   return (
-    <div className="flex ml-auto gap-4">
+    <div className="flex gap-4 border-l border-r px-4">
       <Button disabled={!isChanged} appearance="primary" icon={tab !== 'editor' ? <ArrowLeft24Regular /> : <BranchCompare24Regular />} onClick={() => setTab(tab === 'diff' ? 'editor' : 'diff')}>
         {tab === 'editor' ? 'Changes' : 'Back to Editor'}
       </Button>
@@ -31,11 +34,12 @@ const Actions = ({ isChanged, tab, jsonValue, handleSave, setTab }: { isChanged:
 
 interface HomeProps {}
 export default function Home({}: HomeProps) {
+  const { isLoggedIn } = useAuth()
   const toasterId = useId('toaster')
   const [currentConfigData, setCurrentConfigData] = useState<any>(undefined)
   const [jsonNewValue, setJsonNewValue] = useState<string>('')
   const { dispatchToast } = useToastController(toasterId)
-  const { isLoading, error, data: system } = useSystemInfo()
+  const { isLoading, error, data: system } = useDatabaseConfig()
   const { get: getConfig, put: updateConfig } = useConfig()
   const [tab, setTab] = useState('editor')
   const [value, setValue] = useLocalStorage('hiip.devtools.home_page_data', '')
@@ -52,6 +56,11 @@ export default function Home({}: HomeProps) {
       </div>
     ),
   }[tab]
+
+  const authComponent = {
+    auth: <AuthButtons />,
+    user: <AuthUser />,
+  }
 
   const [,] = useDebounce(
     () => {
@@ -103,17 +112,17 @@ export default function Home({}: HomeProps) {
       description: minifyJson,
     })
   }
-
   return (
     <>
       <div className="px-4 py-2 border-b flex w-full items-center gap-4">
-        {!isLoading && system && system.data ? (
+        {!isLoading && system && system.data && system.data[0] ? (
           <>
             <SearchInput onSubmit={(value) => handleSearch(value)} />
-            <DatabaseStatus system={system} />
             {currentConfigData && <Actions isChanged={isChanged} tab={tab} setTab={setTab} jsonValue={jsonValue} handleSave={handleSave} />}
+            <DatabaseStatus system={system.data[0]} />
+            {authComponent[isLoggedIn ? 'user' : 'auth']}
           </>
-        ) : error || (!system?.data && !isLoading) ? (
+        ) : error || (!system && !isLoading) ? (
           <OfflineMessage />
         ) : (
           <BaseSkeleton lines={1} />
