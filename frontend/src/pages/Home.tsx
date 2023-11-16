@@ -21,7 +21,7 @@ const OfflineMessage = () => {
 const Actions = ({ isChanged, tab, jsonValue, handleSave, setTab }: { isChanged: boolean; tab: string; jsonValue: string; setTab: any; handleSave: any }) => {
   return (
     <div className="flex gap-4 border-l border-r px-4">
-      <Button disabled={!isChanged} appearance="primary" icon={tab !== 'editor' ? <ArrowLeft24Regular /> : <BranchCompare24Regular />} onClick={() => setTab(tab === 'diff' ? 'editor' : 'diff')}>
+      <Button disabled={!isChanged} appearance="secondary" icon={tab !== 'editor' ? <ArrowLeft24Regular /> : <BranchCompare24Regular />} onClick={() => setTab(tab === 'diff' ? 'editor' : 'diff')}>
         {tab === 'editor' ? 'Changes' : 'Back to Editor'}
       </Button>
 
@@ -32,8 +32,7 @@ const Actions = ({ isChanged, tab, jsonValue, handleSave, setTab }: { isChanged:
   )
 }
 
-interface HomeProps {}
-export default function Home({}: HomeProps) {
+export default function Home() {
   const { isLoggedIn } = useAuth()
   const toasterId = useId('toaster')
   const [currentConfigData, setCurrentConfigData] = useState<any>(undefined)
@@ -111,12 +110,27 @@ export default function Home({}: HomeProps) {
   }
 
   const handleSave = () => {
+    if (!isLoggedIn || !currentConfigData || !jsonValue || !isChanged) return
     const minifyJson = minifyJsonString(jsonNewValue)
     configMutation.mutate({
       id: currentConfigData.id,
       description: minifyJson,
     })
   }
+
+  // Keypress
+  useEffect(() => {
+    const callback = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.altKey && event.code === 'KeyS') {
+        handleSave?.()
+      }
+    }
+    document.addEventListener('keydown', callback)
+    return () => {
+      document.removeEventListener('keydown', callback)
+    }
+  }, [currentConfigData])
+
   return (
     <>
       <div className="px-4 py-2 border-b flex w-full items-center gap-4">
