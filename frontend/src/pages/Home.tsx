@@ -1,7 +1,7 @@
 import { JSONEditor } from '../components/editors/json/json'
 import { Button, Toaster, useId, useToastController } from '@fluentui/react-components'
 import { ArrowLeft24Regular, BranchCompare24Regular, SaveSync20Regular } from '@fluentui/react-icons'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { minifyJsonString, prettifyJsonString } from '../components/editors/json/utils/helper'
 import { DiffEditor } from '@monaco-editor/react'
 import { useConfig } from '../hooks/useConfig'
@@ -39,7 +39,7 @@ export default function Home({}: HomeProps) {
   const [currentConfigData, setCurrentConfigData] = useState<any>(undefined)
   const [jsonNewValue, setJsonNewValue] = useState<string>('')
   const { dispatchToast } = useToastController(toasterId)
-  const { isLoading, error, data: system } = useDatabaseConfig()
+  const { isLoading, error, data: system, refetch } = useDatabaseConfig()
   const { get: getConfig, put: updateConfig } = useConfig()
   const [tab, setTab] = useState('editor')
   const [value, setValue] = useLocalStorage('hiip.devtools.home_page_data', '')
@@ -65,7 +65,6 @@ export default function Home({}: HomeProps) {
   const [,] = useDebounce(
     () => {
       if (jsonNewValue && jsonNewValue !== '') {
-        console.log('Cache updated!')
         setValue(jsonNewValue)
       }
     },
@@ -73,14 +72,20 @@ export default function Home({}: HomeProps) {
     [jsonNewValue]
   )
 
+  useEffect(() => {
+    if (isLoggedIn === true) {
+      refetch()
+    }
+  }, [isLoggedIn])
+
   const configMutation = useMutation({
     mutationKey: ['config'],
     mutationFn: (data: { id: string; description: string }) => updateConfig(data.id, data.description),
     onSuccess(data) {
-      dispatchToast(<BaseToast title="Query executed successfully!" appearance="inverted" body={[`Name: ${data.id}`, `Queue ID: ${data.data.job_id}`]} />, { intent: 'success' })
+      dispatchToast(<BaseToast key="success" title="Query executed successfully!" appearance="inverted" body={[`Queue ID: ${data.data.job_id}`]} />, { intent: 'success' })
     },
     onError(error: any, variables) {
-      dispatchToast(<BaseToast title={error?.message} body={[variables?.id]} />, { intent: 'warning' })
+      dispatchToast(<BaseToast key="error" title={error?.message} body={[variables?.id]} />, { intent: 'warning' })
     },
   })
 
@@ -115,18 +120,18 @@ export default function Home({}: HomeProps) {
   return (
     <>
       <div className="px-4 py-2 border-b flex w-full items-center gap-4">
-        {!isLoading && system && system.data && system.data[0] ? (
+        {!isLoading && isLoggedIn && system && system.data && system.data[0] ? (
           <>
             <SearchInput onSubmit={(value) => handleSearch(value)} />
             {currentConfigData && <Actions isChanged={isChanged} tab={tab} setTab={setTab} jsonValue={jsonValue} handleSave={handleSave} />}
             <DatabaseStatus system={system.data[0]} />
-            {authComponent[isLoggedIn ? 'user' : 'auth']}
           </>
         ) : error || (!system && !isLoading) ? (
           <OfflineMessage />
         ) : (
           <BaseSkeleton lines={1} />
         )}
+        {authComponent[isLoggedIn ? 'user' : 'auth']}
       </div>
       {editorComponent}
       <Toaster toasterId={toasterId} />

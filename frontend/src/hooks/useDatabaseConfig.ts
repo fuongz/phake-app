@@ -6,6 +6,8 @@ const useDatabaseConfig = () => {
   const { accessToken } = useAuth()
   return useQuery<any, any>({
     queryKey: ['database-connection'],
+    retry: false,
+    retryOnMount: false,
     queryFn: () =>
       httpClient.get('/database', {
         params: {

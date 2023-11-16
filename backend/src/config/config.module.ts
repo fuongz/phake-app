@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmMongoLogger } from 'src/core/loggers/typeorm-mongo.logger';
 import { TypeOrmConfigService } from './typeorm-config.service';
 import { TypeOrmConfigModule } from './typeorm-config.module';
-import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
